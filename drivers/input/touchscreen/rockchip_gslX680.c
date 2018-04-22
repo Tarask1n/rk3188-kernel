@@ -30,6 +30,8 @@
 #include <linux/regulator/rt5025-regulator.h>
 
 
+#define CONFIG_TCHIP_MACH_TR101Q
+
 #ifdef CONFIG_TCHIP_MACH_TR976Q
 #include "rockchip_gslX680_tr976q.h"
 #elif defined(CONFIG_TCHIP_MACH_TR785)
@@ -260,13 +262,13 @@ static u32 gsl_read_interface(struct i2c_client *client, u8 reg, u8 *buf, u32 nu
 	xfer_msg[0].len = 1;
 	xfer_msg[0].flags = client->flags & I2C_M_TEN;
 	xfer_msg[0].buf = &reg;
-	xfer_msg[0].scl_rate = I2C_SPEED; //RK3066 RK2926 I2C报错时打开这个
+	xfer_msg[0].scl_rate = I2C_SPEED; //RK3066 RK2926 I2C卤篓麓铆脢卤麓貌驴陋脮芒赂枚
 
 	xfer_msg[1].addr = client->addr;
 	xfer_msg[1].len = num;
 	xfer_msg[1].flags |= I2C_M_RD;
 	xfer_msg[1].buf = buf;
-	xfer_msg[1].scl_rate = I2C_SPEED; //RK3066 RK2926 I2C报错时打开这个
+	xfer_msg[1].scl_rate = I2C_SPEED; //RK3066 RK2926 I2C卤篓麓铆脢卤麓貌驴陋脮芒赂枚
 
 	if (reg < 0x80) {
 		i2c_transfer(client->adapter, xfer_msg, ARRAY_SIZE(xfer_msg));
@@ -286,7 +288,7 @@ static u32 gsl_write_interface(struct i2c_client *client, const u8 reg, u8 *buf,
 	xfer_msg[0].len = num + 1;
 	xfer_msg[0].flags = client->flags & I2C_M_TEN;
 	xfer_msg[0].buf = buf;
-	xfer_msg[0].scl_rate = I2C_SPEED; //RK3066 RK2926 I2C报错时打开这个
+	xfer_msg[0].scl_rate = I2C_SPEED; //RK3066 RK2926 I2C卤篓麓铆脢卤麓貌驴陋脮芒赂枚
 
 	return i2c_transfer(client->adapter, xfer_msg, 1) == 1 ? 0 : -EFAULT;
 }
@@ -1091,7 +1093,7 @@ static void gsl_monitor_worker(void)
 
 	if(init_chip_flag)
 	{
-		//\B6系\E7
+		//\B6脧碌\E7
 		//XXXXXXXXXXXXX power off function XXXXXXXXXXXXXX
 #ifdef GSLX680_COMPATIBLE
 		judge_chip_type(gsl_client);
@@ -1106,7 +1108,7 @@ static void gsl_monitor_worker(void)
 				/*gpio_set_value(RK30_PIN1_PD5, GPIO_LOW);*/
 				msleep(100);
 				print_info("***\n\nexception detected\n\n***\n");
-				//\C9系\E7
+				//\C9脧碌\E7
 				//XXXXXXXXXXXXX power on function XXXXXXXXXXXXXX
 				msleep(100);
 				/*gpio_set_value(RK30_PIN1_PD4, GPIO_HIGH);*/

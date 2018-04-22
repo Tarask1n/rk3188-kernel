@@ -258,7 +258,9 @@ obj-$(CONFIG_VIDEO_RKCIF_WORK_PINGPONG)	+= rk29_camera_pingpang.o
 endif
 obj-$(CONFIG_VIDEO_RKCIF_WORK_ONEFRAME)  += generic_sensor.o
 obj-$(CONFIG_VIDEO_RKCIF_WORK_PINGPONG)  += generic_sensor.o
+ifeq ($(CONFIG_VIDEO_RKCIF_SWISP),y)
 obj-$(CONFIG_VIDEO_RKCIF_SWISP) += rk_swisp/
+endif
 
 obj-$(CONFIG_VIDEO_RK29XX_VOUT)		+= rk29xx/
 obj-$(CONFIG_VIDEO_SH_MOBILE_CSI2)	+= sh_mobile_csi2.o
