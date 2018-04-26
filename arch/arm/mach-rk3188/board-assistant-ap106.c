@@ -133,11 +133,11 @@ struct rk29_keys_platform_data rk29_keys_pdata = {
 };
 
 
-int get_harware_version()
-{
-        return 2;
-}
-EXPORT_SYMBOL_GPL(get_harware_version);
+//int get_harware_version()
+//{
+//        return 2;
+//}
+//EXPORT_SYMBOL_GPL(get_harware_version);
 
 #if defined(CONFIG_TOUCHSCREEN_CT36X) || defined(CONFIG_CT36X_TS)
 
@@ -157,6 +157,11 @@ static struct ct36x_platform_data ct36x_info = {
 
 };
 
+#endif
+
+#if defined (CONFIG_ASSISTANT_AP106)
+#define TOUCH_MAX_X		1024
+#define TOUCH_MAX_y		768
 #endif
 
 #if defined(CONFIG_TOUCHSCREEN_GSLX680) || defined(CONFIG_TOUCHSCREEN_GSL3680)
@@ -183,8 +188,8 @@ static int gslx680_init_platform_hw()
 #ifdef CONFIG_MACH_RK_FAC
 static struct tp_platform_data gslx680_data = {
 //		.model				= 0,
-		.x_max				= 1024,
-		.y_max				= 600,
+		.x_max				= TOUCH_MAX_X,
+		.y_max				= TOUCH_MAX_y,
 		.reset_pin			= RK30_PIN0_PB6,
 		.irq_pin			= RK30_PIN1_PB7,
 //		.firmVer			= 0,
@@ -196,12 +201,11 @@ static struct tp_platform_data gslx680_data = {
 };
 #else
 static struct ts_hw_data gslx680_data = {
-		.reset_gpio			= RK30_PIN0_PB6,  // ???
-// Bad probed RK30_PIN0_PC0, RK30_PIN3_PD5, RK30_PIN3_PD3 may be some power control
+		.reset_gpio			= RK30_PIN0_PB6,  
 		.touch_en_gpio		= RK30_PIN1_PB7,
 // RK30_PIN0_PA6 touches 0 messages
-//		.max_x = 1024;
-//		.max_y = 600;
+//		.max_x				= TOUCH_MAX_X;
+//		.max_y				= TOUCH_MAX_Y;
 		.init_platform_hw	= gslx680_init_platform_hw,
 };
 #endif
@@ -1449,6 +1453,7 @@ struct platform_device pwm_regulator_device[1] = {
 };
 #endif
 
+#ifdef CONFIG_RFKILL_RK
 // bluetooth rfkill device, its driver in net/rfkill/rfkill-rk.c
 static struct rfkill_rk_platform_data rfkill_rk_platdata = {
     .type               = RFKILL_TYPE_BLUETOOTH,
@@ -1508,6 +1513,8 @@ static struct platform_device device_rfkill_rk = {
         .platform_data = &rfkill_rk_platdata,
     },
 };
+#endif
+
 #define GPS_SPI_CLK RK30_PIN0_PD6 //low
 #define GPS_SPI_CLK_GPIO GPIO0_D6
 
@@ -1686,10 +1693,21 @@ static struct platform_device device_mt6622 = {
 #endif
 
 static struct platform_device *devices[] __initdata = {
+#ifdef CONFIG_SSD2828_RGB2MIPI
 	&device_ssd2828,
+#endif
+#ifdef CONFIG_ION
 	&device_ion,
+#endif
+#ifdef CONFIG_WIFI_CONTROL_FUNC
 	&rk29sdk_wifi_device,
+#endif
+#ifdef CONFIG_BATTERY_RK30_ADC_FAC
+ 	&rk30_device_adc_battery,
+#endif
+#ifdef CONFIG_RFKILL_RK
 	&device_rfkill_rk,
+#endif
 #if defined(CONFIG_GPS_RK)
 	&rk_device_gps,
 #endif
@@ -1709,17 +1727,76 @@ static int rk_platform_add_display_devices(void)
 	struct platform_device *lcdc0 = NULL; //lcdc0
 	struct platform_device *lcdc1 = NULL; //lcdc1
 	struct platform_device *bl = NULL; //backlight
-
+#ifdef CONFIG_FB_ROCKCHIP
 	fb = &device_fb;
-
+#endif
+#if defined(CONFIG_LCDC0_RK3188)
 	lcdc0 = &device_lcdc0,
+#endif
+#if defined(CONFIG_LCDC1_RK3188)
 	lcdc1 = &device_lcdc1,
+#endif
+#ifdef CONFIG_BACKLIGHT_RK29_BL
 	bl = &rk29_device_backlight,
+#endif
 	__rk_platform_add_display_devices(fb,lcdc0,lcdc1,bl);
 
 	return 0;
 	
 }
+
+//@ tchip  atx8 device 
+#define ATX8_RST_PIN    RK30_PIN3_PD7
+#define ATX8_RST_PIN_NAME       0
+#define ATX8_RST_PIN_FGPIO      0
+
+#if defined (CONFIG_ENCRYPTION_DEVICE)
+#include "../../../drivers/input/netupdate/at18.h"
+static void tchip_iomux_set(struct atx8_gpio *gpio, int iomux)
+{
+	if ( gpio->iomux.name != 0 )
+	{
+		if ( iomux ) // 1 -- iomux i2c  mode 
+			iomux_set(gpio->iomux.name);
+		else
+			iomux_set_gpio_mode(iomux_mode_to_gpio(gpio->iomux.name));
+	}
+}
+static struct atx8_platform_data tchip_atx8_platdata = {
+    .name               = "atx8",
+	.iomux_set			= tchip_iomux_set,
+    .cs_gpio       = {
+        .name       = "atx8_cs",
+        .io             = ATX8_RST_PIN,
+        .enable         = GPIO_HIGH,    // atx8 enable level
+        .iomux          = {
+			.name		= ATX8_RST_PIN_NAME,
+            .fgpio      = ATX8_RST_PIN_FGPIO,
+        },
+    },
+
+    .sda_gpio           = {
+        .name       = "atx8_sda",
+        .io             = RK30_PIN1_PD0,
+        .enable         = GPIO_HIGH,    // sda high level
+        .iomux          = {
+			.name		= I2C0_SDA,
+            .fgpio      = 0,
+            .fi2c       = 1,
+        },
+    },
+    .scl_gpio           = {
+        .name       = "atx8_scl",
+        .io             = RK30_PIN1_PD1,
+        .enable         = GPIO_HIGH,    // scl high level
+        .iomux          = {
+			.name		= I2C0_SCL,
+            .fgpio      = 0,
+            .fi2c       = 1,
+        },
+    },
+};
+#endif //@ tchip atx8 end
 
 // i2c
 static struct i2c_board_info __initdata i2c0_info[] = {
@@ -1756,7 +1833,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.type          = "ak8963",
 		.addr          = 0x0d,
 		.flags         = 0,
-		.irq           = RK30_PIN3_PD7,	
+		.irq           = RK30_PIN3_PD7,
 		.platform_data = &akm8963_info,
 	},
 #endif
@@ -1803,13 +1880,21 @@ static struct i2c_board_info __initdata i2c0_info[] = {
          },
 #endif
 
-
 #if defined (CONFIG_SND_SOC_RT5631)
         {
                 .type                   = "rt5631",
                 .addr                   = 0x1a,
                 .flags                  = 0,
         },
+#endif
+
+#if defined (CONFIG_ENCRYPTION_DEVICE)
+       {
+               .type                   = "netupdate",
+               .addr                   = 0x2f,
+               .flags                  = 0,
+               .platform_data = &tchip_atx8_platdata,
+       },
 #endif
 };
 
@@ -1908,6 +1993,7 @@ static  struct pmu_info  act8846_ldo_info[] = {
 
 
 static struct i2c_board_info __initdata i2c1_info[] = {
+#if defined (CONFIG_REGULATOR_ACT8846)
 	{
 		.type			= "act8846",
 		.addr			= 0x5a, 
@@ -1915,20 +2001,23 @@ static struct i2c_board_info __initdata i2c1_info[] = {
 		.irq			= ACT8846_HOST_IRQ,
 		.platform_data	= &act8846_data,
 	},
+#endif
+#if defined (CONFIG_RTC_HYM8563)
 	{
 		.type                   = "rtc_hym8563",
 		.addr           = 0x51,
 		.flags                  = 0,
 		.irq            = RK30_PIN0_PB5,
 	},
-
+#endif
+#if defined (CONFIG_CW2015_BATTERY)
     {
         .type           = "cw201x",
         .addr           = 0x62,
         .flags          = 0,
         .platform_data  = &cw_bat_platdata,
     },
-
+#endif
 };
 
 
@@ -2119,7 +2208,7 @@ static struct i2c_board_info __initdata i2c4_info[] = {
 				.type			= "rk610_i2c_codec",
 				.addr			= 0x60,
 				.flags			= 0,
-				.platform_data		= &rk610_codec_pdata,			
+				.platform_data		= &rk610_codec_pdata,
 			},
 	#endif
 #endif
@@ -2219,8 +2308,7 @@ static void __init machine_rk30_board_init(void)
 	
 	gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
 
-/*
-#if (defined(CONFIG_PIPO_M9PRO) || defined (CONFIG_ASSISTANT_AP106))
+#if (defined(CONFIG_PIPO_M9PRO) || defined (CONFIG_PIPO_M6PRO))
 //gps lan
 	if (gpio_request(RK30_PIN3_PC7, "RK30_GPS_LAN")) {
 		gpio_free(RK30_PIN3_PC7);
@@ -2229,7 +2317,6 @@ static void __init machine_rk30_board_init(void)
 		gpio_direction_output(RK30_PIN3_PC7, GPIO_HIGH);
 	}
 #endif
-*/
 
 	rk30_i2c_register_board_info();
 	spi_register_board_info(board_spi_devices, ARRAY_SIZE(board_spi_devices));
@@ -2244,11 +2331,11 @@ static void __init machine_rk30_board_init(void)
 #endif
 
 #if defined(CONFIG_MT6620)
-		clk_set_rate(clk_get_sys("rk_serial.1", "uart"), 48*1000000);
+	clk_set_rate(clk_get_sys("rk_serial.1", "uart"), 48*1000000);
 #endif
 
 #if defined(CONFIG_MT5931_MT6622) || defined(CONFIG_MTK_MT6622)
-		clk_set_rate(clk_get_sys("rk_serial.0", "uart"), 24*1000000);
+	clk_set_rate(clk_get_sys("rk_serial.0", "uart"), 24*1000000);
 #endif
 }
 
