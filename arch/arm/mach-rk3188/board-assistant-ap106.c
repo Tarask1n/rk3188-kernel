@@ -361,6 +361,37 @@ static struct platform_device rk29_device_backlight = {
 	}
 };
 
+#if defined (CONFIG_SENSORS_STK8312)
+#define GS2_ORIGENTATION_STK8312	{0, 1, 0, 1, 0, 0, 0, 0, -1}
+#define STK8312_INT_PIN				RK30_PIN0_PB7
+
+static struct gsensor_platform_data STK8312_info = {
+	.model			= 8312,
+	.swap_xy		= 0,
+	.swap_xyz		= 1,
+	.orientation	= GS2_ORIGENTATION_STK8312,
+};
+#endif
+
+#if defined (CONFIG_GS_STK831X)
+#define GS2_ORIGENTATION_STK831x	{0, 1, 0, 0, 1, 0, 0, 0, 1}    
+#define STK831X_INT_PIN				RK30_PIN0_PB7
+
+static int stk831x_init_platform_hw(void)
+{
+	//rk30_mux_api_set(GPIO1B2_SPI_RXD_UART1_SIN_NAME, GPIO1B_GPIO1B2);
+
+	return 0;
+}
+static struct sensor_platform_data stk831x_info = {
+	.type = SENSOR_TYPE_ACCEL,
+	.irq_enable = 0,
+	.poll_delay_ms = 30,
+	.init_platform_hw = stk831x_init_platform_hw,
+	.orientation = GS2_ORIGENTATION_STK831x,
+};
+#endif
+
 /*MMA8452 gsensor*/
 #if defined (CONFIG_GS_MMA8452)
 #define MMA8452_INT_PIN   RK30_PIN0_PB7
@@ -974,7 +1005,7 @@ static struct platform_device device_ion = {
 		}
 		msleep(5);
 		
-		ret = gpio_request(DVDD18_EN_PIN, "ANX6345_d18_en");
+		ret = gpio_request(DVDD18_EN_PIN, "ANX6345_D18_en");
 		if (ret != 0)
 		{
 			gpio_free(DVDD18_EN_PIN);
@@ -1000,7 +1031,6 @@ static struct platform_device device_ion = {
 			gpio_direction_output(EDP_RST_PIN, GPIO_HIGH);
 		}
 		return 0;
-		
 	}
 	static struct anx6345_platform_data anx6345_platform_data = {
 		.power_ctl		= rk_edp_power_ctl,
@@ -1763,38 +1793,38 @@ static void tchip_iomux_set(struct atx8_gpio *gpio, int iomux)
 	}
 }
 static struct atx8_platform_data tchip_atx8_platdata = {
-    .name               = "atx8",
-	.iomux_set			= tchip_iomux_set,
-    .cs_gpio       = {
-        .name       = "atx8_cs",
-        .io             = ATX8_RST_PIN,
-        .enable         = GPIO_HIGH,    // atx8 enable level
-        .iomux          = {
-			.name		= ATX8_RST_PIN_NAME,
-            .fgpio      = ATX8_RST_PIN_FGPIO,
-        },
-    },
+	.name		= "atx8",
+	.iomux_set	= tchip_iomux_set,
+	.cs_gpio	= {
+		.name		= "atx8_cs",
+		.io			= ATX8_RST_PIN,
+		.enable		= GPIO_HIGH,    // atx8 enable level
+		.iomux	= {
+			.name	= ATX8_RST_PIN_NAME,
+			.fgpio	= ATX8_RST_PIN_FGPIO,
+		},
+	},
 
-    .sda_gpio           = {
-        .name       = "atx8_sda",
-        .io             = RK30_PIN1_PD0,
-        .enable         = GPIO_HIGH,    // sda high level
-        .iomux          = {
-			.name		= I2C0_SDA,
-            .fgpio      = 0,
-            .fi2c       = 1,
-        },
-    },
-    .scl_gpio           = {
-        .name       = "atx8_scl",
-        .io             = RK30_PIN1_PD1,
-        .enable         = GPIO_HIGH,    // scl high level
-        .iomux          = {
-			.name		= I2C0_SCL,
-            .fgpio      = 0,
-            .fi2c       = 1,
-        },
-    },
+	.sda_gpio	= {
+		.name		= "atx8_sda",
+		.io			= RK30_PIN1_PD0,
+		.enable		= GPIO_HIGH,    // sda high level
+		.iomux	= {
+			.name	= I2C0_SDA,
+			.fgpio	= 0,
+			.fi2c	= 1,
+		},
+	},
+	.scl_gpio	= {
+		.name		= "atx8_scl",
+		.io			= RK30_PIN1_PD1,
+		.enable		= GPIO_HIGH,    // scl high level
+		.iomux	= {
+			.name	= I2C0_SCL,
+			.fgpio	= 0,
+			.fi2c	= 1,
+		},
+	},
 };
 #endif //@ tchip atx8 end
 
@@ -1802,19 +1832,19 @@ static struct atx8_platform_data tchip_atx8_platdata = {
 static struct i2c_board_info __initdata i2c0_info[] = {
 #if defined (CONFIG_SND_SOC_RT5623)
 	{
-		.type			= "rt5623",
-		.addr			= 0x1a,
-		.flags			= 0,
+		.type		= "rt5623",
+		.addr		= 0x1a,
+		.flags		= 0,
 	},
 #endif
 
 #if defined (CONFIG_GS_MMA8452)
 	{
-		.type	        = "gs_mma8452",
-		.addr	        = 0x1d,
-		.flags	        = 0,
-		.irq	        = MMA8452_INT_PIN,
-		.platform_data = &mma8452_info,
+		.type			= "gs_mma8452",
+		.addr			= 0x1d,
+		.flags			= 0,
+		.irq			= MMA8452_INT_PIN,
+		.platform_data	= &mma8452_info,
 	},
 #endif
 
@@ -1889,11 +1919,11 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 #endif
 
 #if defined (CONFIG_ENCRYPTION_DEVICE)
-       {
-               .type                   = "netupdate",
-               .addr                   = 0x2f,
-               .flags                  = 0,
-               .platform_data = &tchip_atx8_platdata,
+		{
+			.type			= "netupdate",
+			.addr			= 0x2f,
+			.flags			= 0,
+			.platform_data	= &tchip_atx8_platdata,
        },
 #endif
 };
@@ -2103,13 +2133,14 @@ void  rk30_pwm_resume_voltage_set(void)
 }
 
 static struct i2c_board_info __initdata i2c2_info[] = {
-
+#if defined (CONFIG_DP_ANX6345)
 	{
-		.type          = "anx6345",
-		.addr          = 0x39,
-		.flags         = 0,
-		.platform_data = &anx6345_platform_data,
+		.type			= "anx6345",
+		.addr			= 0x39,
+		.flags			= 0,
+		.platform_data	= &anx6345_platform_data,
 	},
+#endif
 
 #if defined(CONFIG_TOUCHSCREEN_CT36X) || defined(CONFIG_CT36X_TS)
 	{
@@ -2118,7 +2149,6 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 		.flags         = 0,
 		.platform_data = &ct36x_info,
 	},
-
 #endif
 
 #if defined(CONFIG_TOUCHSCREEN_GSLX680) || defined(CONFIG_TOUCHSCREEN_GSL3680)
@@ -2130,21 +2160,25 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 	},
 #endif
 
-#if defined(CONFIG_GS_STK831X)
+#if defined (CONFIG_SENSORS_STK8312)
 	{
 		.type			= "stk831x",
-		.flags			= 0,
 		.addr			= 0x3d,
+		.flags			= 0,
+		.irq			= STK8312_INT_PIN,
+		.platform_data	= &STK8312_info,
 	},
 #endif
 
-//#if defined(CONFIG_SENSORS_STK8313)
-//	{
-//		.type			= "stk831x",
-//		.flags			= 0,
-//		.addr			= 0x22,
-//	},
-//#endif
+#if defined(CONFIG_GS_STK831X)
+	{
+		.type 			= "gs_stk831x",
+		.addr 			= 0x3d,
+		.flags			= 0,
+		.irq			= STK831X_INT_PIN,
+		.platform_data	= &stk831x_info,
+	},
+#endif
 
 //	{
 //		.type		= GTP_I2C_NAME ,
@@ -2153,6 +2187,7 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 //        	.irq		= RK30_PIN1_PB7,
 //        	//.platform_data = &ts_pdata,
 //	},
+
 #if defined(CONFIG_LS_US5151)
         {    
                 .type           = "us5151",
@@ -2170,63 +2205,62 @@ static struct i2c_board_info __initdata i2c3_info[] = {
 
 #ifdef CONFIG_I2C4_RK30
 static struct i2c_board_info __initdata i2c4_info[] = {
-
 #if defined(CONFIG_HDMI_CAT66121) && !(defined(CONFIG_PIPO_M7PRO) || defined(CONFIG_PIPO_M9PRO))
 	{
-		.type		= "cat66121_hdmi",
-		.addr		= 0x4c,
-		.flags		= 0,
-		.irq		= RK30_PIN2_PD6,
+		.type			= "cat66121_hdmi",
+		.addr			= 0x4c,
+		.flags			= 0,
+		.irq			= RK30_PIN2_PD6,
 		.platform_data 	= &rk_hdmi_pdata,
 	},
 #endif //Cat66121
 
 #ifdef CONFIG_MFD_RK610
-		{
-			.type			= "rk610_ctl",
-			.addr			= 0x40,
-			.flags			= 0,
-			.platform_data		= &rk610_ctl_pdata,
-		},
-	#ifdef CONFIG_RK610_TVOUT
-			{
-				.type			= "rk610_tvout",
-				.addr			= 0x42,
-				.flags			= 0,
-			},
-	#endif
-	#ifdef CONFIG_HDMI_RK610
-			{
-				.type			= "rk610_hdmi",
-				.addr			= 0x46,
-				.flags			= 0,
-				.irq			= INVALID_GPIO,
-			},
-	#endif
-	#ifdef CONFIG_SND_SOC_RK610
-			{//RK610_CODEC addr  from 0x60 to 0x80 (0x60~0x80)
-				.type			= "rk610_i2c_codec",
-				.addr			= 0x60,
-				.flags			= 0,
-				.platform_data		= &rk610_codec_pdata,
-			},
-	#endif
+	{
+		.type			= "rk610_ctl",
+		.addr			= 0x40,
+		.flags			= 0,
+		.platform_data	= &rk610_ctl_pdata,
+	},
+#ifdef CONFIG_RK610_TVOUT
+	{
+		.type			= "rk610_tvout",
+		.addr			= 0x42,
+		.flags			= 0,
+	},
 #endif
+#ifdef CONFIG_HDMI_RK610
+	{
+		.type			= "rk610_hdmi",
+		.addr			= 0x46,
+		.flags			= 0,
+		.irq			= INVALID_GPIO,
+	},
+#endif
+#ifdef CONFIG_SND_SOC_RK610
+	{//RK610_CODEC addr  from 0x60 to 0x80 (0x60~0x80)
+		.type			= "rk610_i2c_codec",
+		.addr			= 0x60,
+		.flags			= 0,
+		.platform_data	= &rk610_codec_pdata,
+	},
+#endif
+#endif  //#ifdef CONFIG_MFD_RK610
 
 #if defined (CONFIG_SND_SOC_RT5616)
-        {
-                .type                   = "rt5616",
-                .addr                   = 0x1b,
-                .flags                  = 0,
-        },
+	{
+		.type		= "rt5616",
+		.addr		= 0x1b,
+		.flags		= 0,
+	},
 #endif
 
 #if defined (CONFIG_SND_SOC_RT5631)
-        {
-                .type                   = "rt5631",
-                .addr                   = 0x1a,
-                .flags                  = 0,
-        },
+	{
+		.type		= "rt5631",
+		.addr		= 0x1a,
+		.flags		= 0,
+	},
 #endif
 
 };
@@ -2272,25 +2306,25 @@ static void rk30_pm_power_off(void)
 {
 	printk(KERN_ERR "rk30_pm_power_off start...\n");
 #if defined(CONFIG_MFD_WM831X)
-	wm831x_set_bits(Wm831x,WM831X_GPIO_LEVEL,0x0001,0x0000);  //set sys_pwr 0
-	wm831x_device_shutdown(Wm831x);//wm8326 shutdown
+	wm831x_set_bits(Wm831x,WM831X_GPIO_LEVEL, 0x01, 0x00);  //set sys_pwr 0
+	wm831x_device_shutdown(Wm831x);  //wm8326 shutdown
 #endif
 #if defined(CONFIG_REGULATOR_ACT8846)
-       if (pmic_is_act8846()) {
-               printk("enter dcdet===========\n");
-               if(gpio_get_value (RK30_PIN0_PB2) == GPIO_LOW)
-               {
-                       printk("enter restart===========\n");
-                       arm_pm_restart(0, "charge");
-               }
+	if (pmic_is_act8846()) 
+	{
+		printk("enter dcdet===========\n");
+		if(gpio_get_value (RK30_PIN0_PB2) == GPIO_LOW)
+		{
+			printk("enter restart===========\n");
+			arm_pm_restart(0, "charge");
+		}
 		/** code here may cause tablet cannot boot when shutdown without charger pluged in
 		  * and then plug in charger. -- Cody Xie*/
-               else
+		else
 		{
 			act8846_device_shutdown();
 		}
-		  
-       }
+	}
 #endif
 	gpio_direction_output(POWER_ON_PIN, GPIO_LOW);
 	while (1);
@@ -2298,7 +2332,7 @@ static void rk30_pm_power_off(void)
 
 static void __init machine_rk30_board_init(void)
 {
-	int ret;	
+	int ret;
 
 	avs_init(); //NAND io remap - possibly comment out? d33
 	gpio_request(POWER_ON_PIN, "poweronpin");
@@ -2310,10 +2344,13 @@ static void __init machine_rk30_board_init(void)
 
 #if (defined(CONFIG_PIPO_M9PRO) || defined (CONFIG_PIPO_M6PRO))
 //gps lan
-	if (gpio_request(RK30_PIN3_PC7, "RK30_GPS_LAN")) {
+	if (gpio_request(RK30_PIN3_PC7, "RK30_GPS_LAN"))
+	{
 		gpio_free(RK30_PIN3_PC7);
 		printk("func %s, line %d: request GPS_LAN gpio failed\n", __FUNCTION__, __LINE__);
-	} else {
+	}
+	else
+	{
 		gpio_direction_output(RK30_PIN3_PC7, GPIO_HIGH);
 	}
 #endif
@@ -2354,11 +2391,13 @@ static void __init rk30_reserve(void)
 #endif
 #ifdef CONFIG_ION
 	size = ddr_get_cap() >> 20;
-	if(size >= 1024) { // DDR >= 1G, set ion to 120M
+	if(size >= 1024)
+	{ // DDR >= 1G, set ion to 120M
 		rk30_ion_pdata.heaps[0].size = ION_RESERVE_SIZE_120M;
 		ion_reserve_size = ION_RESERVE_SIZE_120M;
 	}
-	else {
+	else
+	{
 		rk30_ion_pdata.heaps[0].size = ION_RESERVE_SIZE;
 		ion_reserve_size = ION_RESERVE_SIZE;
 	}
@@ -2380,7 +2419,6 @@ static void __init rk30_reserve(void)
 	resource_fb[2].end = resource_fb[2].start + get_fb_size() - 1;
 #endif
 #endif
-
 
 #ifdef CONFIG_VIDEO_RK29
 	rk30_camera_request_reserve_mem();

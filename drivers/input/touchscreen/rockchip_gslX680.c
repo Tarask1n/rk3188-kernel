@@ -205,7 +205,7 @@ static u16 y_new = 0;
 
 static int gslX680_init(void)
 {
-	if(gpio_request(WAKE_PORT, NULL) != 0)
+	if(gpio_request(WAKE_PORT, "gslX680 reset") != 0)
 	{
 		gpio_free(WAKE_PORT);
 		printk("gslX680_init_platform_hw gpio_request %d WAKE_PORT error\n", WAKE_PORT);
@@ -214,18 +214,21 @@ static int gslX680_init(void)
 	gpio_direction_output(WAKE_PORT, 0);
 	gpio_set_value(WAKE_PORT, GPIO_HIGH);
 	msleep(20);
-    
-	if(gpio_request(POWER_PORT,NULL) != 0)
-	{
-		gpio_free(POWER_PORT);
-		printk("gslX680_init_platform_hw gpio_request %d POWER_PORT error\n", POWER_PORT);
-		return -EIO;
-	}
-	gpio_direction_output(POWER_PORT, 0);
-	gpio_set_value(POWER_PORT, GPIO_LOW);
-	msleep(20);
 
-	if(gpio_request(IRQ_PORT,NULL) != 0)
+	if(INVALID_GPIO != POWER_PORT)
+	{
+		if(gpio_request(POWER_PORT, "gslX3680 power") != 0)
+		{
+			gpio_free(POWER_PORT);
+			printk("gslX680_init_platform_hw gpio_request %d POWER_PORT error\n", POWER_PORT);
+			return -EIO;
+		}
+		gpio_direction_output(POWER_PORT, 0);
+		gpio_set_value(POWER_PORT, GPIO_LOW);
+		msleep(20);
+	}
+
+	if(gpio_request(IRQ_PORT, "gslX3680 irq") != 0)
 	{
 		gpio_free(IRQ_PORT);
 		printk("gslX680_init_platform_hw gpio_request %d IRQ_PORT error\n", IRQ_PORT);

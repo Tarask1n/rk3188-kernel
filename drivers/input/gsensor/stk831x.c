@@ -909,7 +909,7 @@ static int STK831x_SetEnable(struct stk831x_data *stk, char en)
 	
 	if(new_enabled == atomic_read(&stk->enabled))
 		return 0;
-	//printk(KERN_INFO "%s:%x\n", __func__, en);
+	printk(KERN_INFO "%s:enable %x\n", __func__, en);
 
 	//mutex_lock(&stk->write_lock);		
 	if(stk->first_enable && k_status != STK_K_RUNNING)			
@@ -955,6 +955,7 @@ static int STK831x_SetEnable(struct stk831x_data *stk, char en)
 	{
 		STK831X_SetVD(stk);		
 #if STK_ACC_POLLING_MODE
+		printk(KERN_INFO "%s:acc_timer.state %x\n", __func__, stk->acc_timer.state);
 		hrtimer_start(&stk->acc_timer, stk->acc_poll_delay, HRTIMER_MODE_REL);			
 #else
 		enable_irq((unsigned int)stk->irq);	
