@@ -53,7 +53,7 @@
 #define STK_PERMISSION_THREAD
 #define STK_RESUME_RE_INIT	
 #define STK_DEBUG_PRINT
-#define STK_DEBUG_RAWDATA
+//#define STK_DEBUG_RAWDATA
 //#define STK_LOWPASS
 #define STK_FIR_LEN	4
 
@@ -845,8 +845,8 @@ static int STK831x_ReportValue(struct stk831x_data *stk)
 
 		
 #ifdef STK_DEBUG_PRINT	
-	printk(KERN_INFO "%s:%4d,%4d,%4d\n", __func__, stk->raw_data[0], 
-		stk->raw_data[1], stk->raw_data[2]);	
+	//printk(KERN_INFO "%s:%4d,%4d,%4d\n", __func__, stk->raw_data[0], 
+	//	stk->raw_data[1], stk->raw_data[2]);	
 #endif	
 	//stk->raw_data[0] = stk->raw_data[0] * 981 / 965 ;
 	//stk->raw_data[1] = stk->raw_data[1] * 981 / 965 ;
@@ -1006,9 +1006,9 @@ static int STK831x_SetDelay(struct stk831x_data *stk, uint32_t sdelay_ns)
 	
 #ifdef STK_DEBUG_PRINT		
 #ifdef STK831X_HOLD_ODR
-	printk(KERN_INFO "%s:sdelay_us=%d, Hold delay = %d\n", __func__, sdelay_us, STK831X_SAMPLE_TIME[STK831X_INIT_ODR]);
+	//printk(KERN_INFO "%s:sdelay_us=%d, Hold delay = %d\n", __func__, sdelay_us, STK831X_SAMPLE_TIME[STK831X_INIT_ODR]);
 #else
-	printk(KERN_INFO "%s:sdelay_us=%d\n", __func__, sdelay_us);
+	//printk(KERN_INFO "%s:sdelay_us=%d\n", __func__, sdelay_us);
 #endif	
 #endif	
 	mutex_lock(&stk->write_lock);
