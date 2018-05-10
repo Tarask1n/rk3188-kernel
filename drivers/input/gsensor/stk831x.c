@@ -45,15 +45,15 @@
 #define STK_ROCKCHIP_PLATFORM
 #define STK_ACC_DRIVER_VERSION	"1.6.2 revised"
 /*choose polling or interrupt mode*/
-#define STK_ACC_POLLING_MODE	1
+#define STK_ACC_POLLING_MODE	0
 #if (!STK_ACC_POLLING_MODE)
 	#define ADDITIONAL_GPIO_CFG 1
-	#define STK_INT_PIN	39
+	#define STK_INT_PIN			RK30_PIN0_PB7
 #endif
 #define STK_PERMISSION_THREAD
-#define STK_RESUME_RE_INIT	
-#define STK_DEBUG_PRINT
-#define STK_DEBUG_RAWDATA
+#define STK_RESUME_RE_INIT
+//#define STK_DEBUG_PRINT
+//#define STK_DEBUG_RAWDATA
 //#define STK_LOWPASS
 #define STK_FIR_LEN	4
 
@@ -208,7 +208,7 @@ static int32_t stk_get_ic_content(struct stk831x_data *stk);
 static int STK831x_SetOffset(char buf[]);
 static void stk_handle_first_en(struct stk831x_data *stk);
 
-#if defined(CONFIG_TCHIP_MACH_TR1088)
+#if defined(CONFIG_TCHIP_MACH_TR1088) || defined(CONFIG_ASSISTANT_AP106)
 static int gsensor_direct_x = 1;
 static int gsensor_direct_y = 0;
 static int gsensor_direct_z = 0;
@@ -1581,7 +1581,7 @@ static int STK831X_VerifyCali(struct stk831x_data *stk, unsigned char en_dis)
 		acc_ave[0] -= STK_LSB_1G;
 		break;
 	case NEGATIVE_X_UP:
-		acc_ave[0] += STK_LSB_1G;		
+		acc_ave[0] += STK_LSB_1G;
 		break;
 	case POSITIVE_Y_UP:
 		acc_ave[1] -= STK_LSB_1G;

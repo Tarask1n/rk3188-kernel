@@ -48,7 +48,7 @@ Comprehensive camera device registration:
 #include "../mach-rk3188/tchip_camera_setup_tr101q.h"
 #elif defined (CONFIG_ASSISTANT_AP106)
 #include "../mach-rk3188/tchip_camera_setup_tr976q.h"
-#elif defined (CONFIG_TCHIP_MACH_TR785)	
+#elif defined (CONFIG_TCHIP_MACH_TR785)
 #include "../mach-rk3188/tchip_camera_setup_tr785v21.h"
 #else
 static struct rkcamera_platform_data new_camera[] = {
@@ -293,21 +293,25 @@ static struct rkcamera_platform_data new_camera[] = {
  * author: ddl@rock-chips.com
  *****************************************************************************************/
 #ifdef CONFIG_VIDEO_RK29
-#define CONFIG_SENSOR_POWER_IOCTL_USR	   1 //define this refer to your board layout
+#define CONFIG_SENSOR_POWER_IOCTL_USR	   0 //define this refer to your board layout
 #define CONFIG_SENSOR_RESET_IOCTL_USR	   0
 #define CONFIG_SENSOR_POWERDOWN_IOCTL_USR	   0
 #define CONFIG_SENSOR_FLASH_IOCTL_USR	   0
 
+#ifdef  CONFIG_REGULATOR_ACT8846
+	#define TCHIP_VCC28_CIF "act_ldo8" // vcc28_cif
+	#define TCHIP_VCC18_CIF "act_ldo3" // vcc18_cif
+#else
+	#define TCHIP_VCC28_CIF "ldo7" // vcc28_cif
+	#define TCHIP_VCC18_CIF "ldo1" // vcc18_cif
+#endif
+
+
 static void rk_cif_power(int on)
 {
     struct regulator *ldo_18,*ldo_28;
-#ifdef  CONFIG_REGULATOR_ACT8846
-	ldo_28 = regulator_get(NULL, "act_ldo8");	// vcc28_cif
-	ldo_18 = regulator_get(NULL, "act_ldo3");	// vcc18_cif
-#else
-	ldo_28 = regulator_get(NULL, "ldo7");	// vcc28_cif
-	ldo_18 = regulator_get(NULL, "ldo1");	// vcc18_cif
-#endif
+	ldo_28 = regulator_get(NULL, TCHIP_VCC28_CIF);	// vcc28_cif
+	ldo_18 = regulator_get(NULL, TCHIP_VCC18_CIF);	// vcc18_cif
 	if (ldo_28 == NULL || IS_ERR(ldo_28) || ldo_18 == NULL || IS_ERR(ldo_18)){
         printk("get cif ldo failed!\n");
         if(on ==0 )
@@ -334,13 +338,13 @@ static void rk_cif_power(int on)
     	regulator_put(ldo_18);		
     	mdelay(500);
 #endif
-    	printk("%s set ldo7 vcc28_cif=%dmV end\n", __func__, 0);
-    	printk("%s set ldo1 vcc18_cif=%dmV end\n", __func__, 0);
+    	printk("%s set %s vcc28_cif=%dmV end\n", __func__, TCHIP_VCC28_CIF, 0);
+    	printk("%s set %s vcc18_cif=%dmV end\n", __func__, TCHIP_VCC18_CIF, 0);
         }
     else{
     	regulator_set_voltage(ldo_28, 2800000, 2800000);
     	regulator_enable(ldo_28);
-    	printk("%s set ldo7 vcc28_cif=%dmV end\n", __func__, regulator_get_voltage(ldo_28));
+    	printk("%s set %s vcc28_cif=%dmV end\n", __func__, TCHIP_VCC28_CIF, regulator_get_voltage(ldo_28));
     	regulator_put(ldo_28);
 #if defined(CONFIG_TCHIP_MACH_TRQ7_LJ)
     	regulator_set_voltage(ldo_18, 1200000, 1200000);
@@ -349,7 +353,7 @@ static void rk_cif_power(int on)
 #endif
     //	regulator_set_suspend_voltage(ldo, 1800000);
     	regulator_enable(ldo_18);
-    	printk("%s set ldo1 vcc18_cif=%dmV end\n", __func__, regulator_get_voltage(ldo_18));
+    	printk("%s set %s vcc18_cif=%dmV end\n", __func__, TCHIP_VCC18_CIF, regulator_get_voltage(ldo_18));
     	regulator_put(ldo_18);
         }
 }

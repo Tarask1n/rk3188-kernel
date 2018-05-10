@@ -373,7 +373,7 @@ static struct platform_device rk29_device_backlight = {
 
 static struct gsensor_platform_data STK8312_info = {
 	.model			= 8312,
-	.swap_xy		= 0,
+	.swap_xy		= 0, // 0
 	.swap_xyz		= 1,
 	.orientation	= GS2_ORIGENTATION_STK8312,
 };
@@ -1819,6 +1819,26 @@ static struct atx8_platform_data tchip_atx8_platdata = {
 
 // i2c
 static struct i2c_board_info __initdata i2c0_info[] = {
+#if defined (CONFIG_SENSORS_STK8312)
+	{
+		.type			= "stk831x",
+		.addr			= 0x3d,
+		.flags			= 0,
+		.irq			= STK8312_INT_PIN,
+		.platform_data	= &STK8312_info,
+	},
+#endif
+
+#if defined(CONFIG_GS_STK831X)
+	{
+		.type 			= "gs_stk831x",
+		.addr 			= 0x3d,
+		.flags			= 0,
+		.irq			= STK831X_INT_PIN,
+		.platform_data	= &stk831x_info,
+	},
+#endif
+
 #if defined (CONFIG_SND_SOC_RT5623)
 	{
 		.type		= "rt5623",
@@ -2146,26 +2166,6 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 		.flags			= 0,
 		.addr			= 0x40,
 		.platform_data	= &gslx680_data,
-	},
-#endif
-
-#if defined (CONFIG_SENSORS_STK8312)
-	{
-		.type			= "stk831x",
-		.addr			= 0x3d,
-		.flags			= 0,
-		.irq			= STK8312_INT_PIN,
-		.platform_data	= &STK8312_info,
-	},
-#endif
-
-#if defined(CONFIG_GS_STK831X)
-	{
-		.type 			= "gs_stk831x",
-		.addr 			= 0x3d,
-		.flags			= 0,
-		.irq			= STK831X_INT_PIN,
-		.platform_data	= &stk831x_info,
 	},
 #endif
 
