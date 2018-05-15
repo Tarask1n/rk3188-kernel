@@ -941,7 +941,7 @@ static void rk30_camera_request_reserve_mem(void)
     int cam_ipp_mem=PMEM_CAMIPP_NECESSARY, cam_pmem=PMEM_CAM_NECESSARY;
 
     i =0;
-    max_resolution = 0x00;
+    max_resolution = 0x500000;  //0x00; WORKAROUND TO INCREASE IPP SIZE
     while (strstr(new_camera[i].dev.device_info.dev.init_name,"end")==NULL) {
         if (new_camera[i].resolution > max_resolution)
             max_resolution = new_camera[i].resolution;

@@ -26,7 +26,7 @@ static struct rkcamera_platform_data new_camera[] = {
             			24),
     new_camera_device_ex(RK29_CAM_SENSOR_SP2518,
                         front,
-                        270, //CONFIG_SENSOR_ORIENTATION_X
+                        0, //CONFIG_SENSOR_ORIENTATION_X
                         INVALID_GPIO, //CONFIG_SENSOR_POWER_PIN_
                         0,//CONFIG_SENSOR_POWERACTIVE_LEVEL_
                         INVALID_GPIO, //CONFIG_SENSOR_RESET_PIN
@@ -35,7 +35,7 @@ static struct rkcamera_platform_data new_camera[] = {
                         (CONS(RK29_CAM_SENSOR_SP2518,_PWRDN_ACTIVE)&0x10)|0x01,//CONFIG_SENSOR_POWERDNACTIVE_LEVEL_X
                         0,//flash led 
                         sp2518_FULL_RESOLUTION,// resolution ,define use sp2518_FULL_RESOLUTION  in arch/arm/plat-rk/include/plat/rk_camera.h
-                        0,//bit0=mirror[0/1] and bit1=flip[0/1]
+                        2,//bit0=mirror[0/1] and bit1=flip[0/1]
                         3,// i2c changel  == CONFIG_SENSOR_IIC_ADAPTER_ID_X
                         100000,//// i2c speed , 100000 = 100KHz
                         CONS(RK29_CAM_SENSOR_SP2518,_I2C_ADDR),//  define use sp2518_I2C_ADDR in arch/arm/plat-rk/include/plat/rk_camera.h ,too
@@ -43,7 +43,7 @@ static struct rkcamera_platform_data new_camera[] = {
             			24),
     new_camera_device_ex(RK29_CAM_SENSOR_SP2518,
                         back,
-                        90, //CONFIG_SENSOR_ORIENTATION_X
+                        0, //CONFIG_SENSOR_ORIENTATION_X
                         INVALID_GPIO, //CONFIG_SENSOR_POWER_PIN_
                         0,//CONFIG_SENSOR_POWERACTIVE_LEVEL_
                         INVALID_GPIO, //CONFIG_SENSOR_RESET_PIN
@@ -52,7 +52,7 @@ static struct rkcamera_platform_data new_camera[] = {
                         (CONS(RK29_CAM_SENSOR_SP2518,_PWRDN_ACTIVE)&0x10)|0x01,//CONFIG_SENSOR_POWERDNACTIVE_LEVEL_X
                         0,//flash led 
                         sp2518_FULL_RESOLUTION,// resolution ,define use sp2518_FULL_RESOLUTION  in arch/arm/plat-rk/include/plat/rk_camera.h
-                        0,//bit0=mirror[0/1] and bit1=flip[0/1]
+                        2,//bit0=mirror[0/1] and bit1=flip[0/1]
                         3,// i2c changel  == CONFIG_SENSOR_IIC_ADAPTER_ID_X
                         100000,//// i2c speed , 100000 = 100KHz
                         CONS(RK29_CAM_SENSOR_SP2518,_I2C_ADDR),//  define use sp2518_I2C_ADDR in arch/arm/plat-rk/include/plat/rk_camera.h ,too

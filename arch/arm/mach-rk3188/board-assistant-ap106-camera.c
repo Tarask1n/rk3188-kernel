@@ -293,7 +293,7 @@ static struct rkcamera_platform_data new_camera[] = {
  * author: ddl@rock-chips.com
  *****************************************************************************************/
 #ifdef CONFIG_VIDEO_RK29
-#define CONFIG_SENSOR_POWER_IOCTL_USR	   0 //define this refer to your board layout
+#define CONFIG_SENSOR_POWER_IOCTL_USR	   1 //define this refer to your board layout
 #define CONFIG_SENSOR_RESET_IOCTL_USR	   0
 #define CONFIG_SENSOR_POWERDOWN_IOCTL_USR	   0
 #define CONFIG_SENSOR_FLASH_IOCTL_USR	   0
@@ -338,13 +338,13 @@ static void rk_cif_power(int on)
     	regulator_put(ldo_18);		
     	mdelay(500);
 #endif
-    	printk("%s set %s vcc28_cif=%dmV end\n", __func__, TCHIP_VCC28_CIF, 0);
-    	printk("%s set %s vcc18_cif=%dmV end\n", __func__, TCHIP_VCC18_CIF, 0);
+    	// printk("%s set %s vcc28_cif=%dmV end\n", __func__, TCHIP_VCC28_CIF, 0);
+    	// printk("%s set %s vcc18_cif=%dmV end\n", __func__, TCHIP_VCC18_CIF, 0);
         }
     else{
     	regulator_set_voltage(ldo_28, 2800000, 2800000);
     	regulator_enable(ldo_28);
-    	printk("%s set %s vcc28_cif=%dmV end\n", __func__, TCHIP_VCC28_CIF, regulator_get_voltage(ldo_28));
+    	// printk("%s set %s vcc28_cif=%dmV end\n", __func__, TCHIP_VCC28_CIF, regulator_get_voltage(ldo_28));
     	regulator_put(ldo_28);
 #if defined(CONFIG_TCHIP_MACH_TRQ7_LJ)
     	regulator_set_voltage(ldo_18, 1200000, 1200000);
@@ -353,7 +353,7 @@ static void rk_cif_power(int on)
 #endif
     //	regulator_set_suspend_voltage(ldo, 1800000);
     	regulator_enable(ldo_18);
-    	printk("%s set %s vcc18_cif=%dmV end\n", __func__, TCHIP_VCC18_CIF, regulator_get_voltage(ldo_18));
+    	// printk("%s set %s vcc18_cif=%dmV end\n", __func__, TCHIP_VCC18_CIF, regulator_get_voltage(ldo_18));
     	regulator_put(ldo_18);
         }
 }

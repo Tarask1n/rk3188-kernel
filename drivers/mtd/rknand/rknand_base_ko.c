@@ -419,8 +419,8 @@ static int rknand_info_init(struct rknand_info *nand_info)
 
 /*
  * CMY: 增加了对命令行分区信息的支持
- *		若cmdline有提供分区信息，则使用cmdline的分区信息进行分区
- *		若cmdline没有提供分区信息，则使用默认的分区信息(rk28_partition_info)进行分区
+ *		?cmdline有提供分区信息，则使用cmdline的分区信息进行分区
+ *		?cmdline没有提供分区信息，则使用默认的分区信息(rk28_partition_info)进行分区
  */
 
 #ifdef CONFIG_MTD_CMDLINE_PARTS
