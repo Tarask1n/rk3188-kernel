@@ -50,6 +50,9 @@ extern struct linux_logo tr101q_charging_logo_linux_clut224;//extern const struc
 #ifdef CONFIG_LOGO_PIPO_CLUT224
 extern const struct linux_logo logo_pipo_clut224;
 #endif
+#ifdef CONFIG_LOGO_ASSISTANT_CLUT224
+extern struct linux_logo logo_assistant_clut224;
+#endif
 extern const struct linux_logo logo_blackfin_vga16;
 extern const struct linux_logo logo_blackfin_clut224;
 extern const struct linux_logo logo_dec_clut224;

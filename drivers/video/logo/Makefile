@@ -13,6 +13,7 @@ obj-$(CONFIG_LOGO_LINUX_CLUT224_TR838)	+= tr838_logo_linux_clut224.o
 obj-$(CONFIG_LOGO_LINUX_CLUT224_XBT_3188)	+= xbt_3188_logo_linux_clut224.o
 obj-$(CONFIG_LOGO_LINUX_CLUT224)	+= logo_linux_clut224.o
 obj-$(CONFIG_LOGO_PIPO_CLUT224)	    += logo_pipo_clut224.o
+obj-$(CONFIG_LOGO_ASSISTANT_CLUT224)	    += logo_assistant_clut224.o
 obj-$(CONFIG_LOGO_BLACKFIN_CLUT224)	+= logo_blackfin_clut224.o
 obj-$(CONFIG_LOGO_BLACKFIN_VGA16)	+= logo_blackfin_vga16.o
 obj-$(CONFIG_LOGO_DEC_CLUT224)		+= logo_dec_clut224.o

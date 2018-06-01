@@ -59,6 +59,10 @@ config LOGO_PIPO_CLUT224
 	bool "Standard 224-pipo Linux logo"
 	default n
 	
+config LOGO_ASSISTANT_CLUT224
+	bool "Standard 224-color Linux logo for Assistant"
+	default n
+	
 config LOGO_BLACKFIN_VGA16
 	bool "16-colour Blackfin Processor Linux logo"
 	depends on BLACKFIN
